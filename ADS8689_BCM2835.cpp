@@ -50,7 +50,7 @@ bool ADS8689::begin(uint8_t spiModule, uint8_t cs)
   }
   else
   {
-    printf("Choose MCP3008_SPI_AUX or MCP3008_SPI_0\n");
+    printf("Choose SPI_AUX or SPI_0\n");
     return false;
   }
   

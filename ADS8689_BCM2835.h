@@ -55,7 +55,6 @@ class ADS8689
   private:
     uint8_t spiModule;
     uint8_t cs;
-    void setup(); 
 };
 
 
