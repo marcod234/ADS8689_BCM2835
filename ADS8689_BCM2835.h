@@ -10,14 +10,16 @@
 
 #include <bcm2835.h>
 #include <stdio.h>
+#include <time.h>
 
 //addresses for register bits
 //format: reg_name_MSB_LSB
 //only unreserved sections are defined
 //if a section includes reserved bits, writes will be ignored/reads return 0 at those bits
+
 #define DEVICE_ID_REG_23_16   0x02 //Device ID
 #define RST_PWCTRL_REG_7_0    0x04 //Reset and power control
-#define RST_PWCTRL_REG_15_8   0x05
+#define RST_PWCTRL_REG_15_8   0x05 
 #define SDI_CTL_REG_7_0       0x08 //SDI data input control
 #define SDO_CTL_REG_7_0       0x0C //SDO-x data input control
 #define SDO_CTL_REG_15_8      0x0D

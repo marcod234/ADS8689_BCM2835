@@ -11,15 +11,19 @@ uint16_t ADS8689::sendCommand(uint8_t op, uint8_t address, uint16_t data)
 {
   char buff[4] = {0};
   
-  buff[0] = (op | (address >> 7));
-  buff[1] = (address << 1);
+  buff[0] = op/*(op | (address >> 7))*/;
+  buff[1] = address/*(address << 1)*/;
   buff[2] = (data >> 8);
   buff[3] = data;
+  
+  //printf("Sending: %.2x %.2x %.2x %.2x\n", buff[0], buff[1], buff[2], buff[3]);
   
   if(spiModule == SPI_AUX)
     bcm2835_aux_spi_transfern(buff, sizeof(buff));
   else
     bcm2835_spi_transfern(buff, sizeof(buff));
+    
+  //printf("Got: %.2x %.2x %.2x %.2x\n", buff[0], buff[1], buff[2], buff[3]);
     
   return ((buff[0] << 8) | buff[1]); 
 }
@@ -28,6 +32,14 @@ bool ADS8689::begin(uint8_t spiModule, uint8_t cs)
 {
   this->cs = cs;
   this->spiModule = spiModule;
+  
+  struct timespec delay;
+  delay.tv_sec = 1;
+  delay.tv_nsec = 10005;
+  
+  nanosleep(&delay, NULL);
+  
+  delay.tv_sec = 0;
   
   if(this->spiModule == SPI_AUX)
   {
@@ -54,9 +66,22 @@ bool ADS8689::begin(uint8_t spiModule, uint8_t cs)
     return false;
   }
   
-  
   //set adc to use internal VREF and range to 1.25*VREF
-  sendCommand(WRITE_LSBYTE, RANGE_SEL_REG_7_0, 0x000B);
+
+  uint16_t got = 0;
+  
+  do
+  {
+    sendCommand(WRITE, RANGE_SEL_REG_7_0, 0x000B);
+    nanosleep(&delay, NULL);
+    sendCommand(READ_HWORD, RANGE_SEL_REG_7_0, 0x0000);
+    got = sendCommand(NOP, 0x00, 0x0000);
+    printf("Got: %.2x %.2x\n", got >> 8, (got & 0x00FF));
+    nanosleep(&delay, NULL);
+  }while(got != 0x000B);
+  
+  sendCommand(NOP, 0x00, 0x0000);
+  
   return true;
 }
 

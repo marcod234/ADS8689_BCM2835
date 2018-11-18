@@ -32,7 +32,8 @@ int main()
   {
 	  //read adc
     int val = adc.readADC();
-    printf("val = %d\n", val);
+    printf("val = %d ", val);
+    printf("Voltage = %f\n", (((float)(val)) * 4.096f)/(65535));
 	  nanosleep(&delay, NULL); //must wait at least 10000 ns before next read
   }
 }
